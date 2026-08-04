@@ -1,0 +1,16 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+xgboost
+tensorflow
+keras
+statsmodels
+jupyter
+notebook
+streamlit 
+sqlalchemy 
+psycopg2-binary 
+fpdf2 
+python-dotenv
