@@ -1,0 +1,2 @@
+date,year,month,day,day_of_week,is_weekend,city,temperature_c,humidity_percent,household_size,income_level,power_outage_hours,lag_1,lag_7,lag_30,rolling_mean_7,rolling_mean_30
+2026-02-09,2026,2,9,0,0,3,32.4,68,6,1,0.31,20.67,22.08,21.4,20.601428571428574,22.177666666666667
