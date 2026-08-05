@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from src.ui_components import apply_custom_theme
 from src.model_integration import predict_electricity
-from src.database import init_db, log_prediction, get_prediction_history, check_db_connection
+from src.database import init_db, log_prediction, get_prediction_history, check_db_connection, is_sqlite_fallback
 from src.export_utils import convert_to_csv, convert_to_pdf
 
 # Initialize Database
@@ -38,8 +38,16 @@ def main():
     # System Status Card
     st.sidebar.markdown("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
     db_connected = check_db_connection()
-    db_status_color = "#10b981" if db_connected else "#ef4444"
-    db_status_text = "Connected" if db_connected else "Offline (Fallback)"
+    if db_connected:
+        if is_sqlite_fallback():
+            db_status_color = "#f59e0b"
+            db_status_text = "SQLite Fallback"
+        else:
+            db_status_color = "#10b981"
+            db_status_text = "PostgreSQL Connected"
+    else:
+        db_status_color = "#ef4444"
+        db_status_text = "Offline"
     
     st.sidebar.markdown(
         f"""
@@ -116,6 +124,8 @@ def main():
                     
                     if not logged:
                         st.warning("Prediction was generated but could not be saved to the database. Check connection settings.")
+                    elif is_sqlite_fallback():
+                        st.info("💡 Saved to SQLite fallback database (Local).")
 
     elif page == "History & Export":
         st.subheader("Prediction History")

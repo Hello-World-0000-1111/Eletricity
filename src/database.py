@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, MetaData, Table
+from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, MetaData, Table, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 import os
@@ -16,18 +16,14 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "electricity_db")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+SQLITE_URL = "sqlite:///db/electricity.db"
 
-try:
-    engine = create_engine(DATABASE_URL)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    Base = declarative_base()
-except Exception as e:
-    engine = None
-    SessionLocal = None
-    Base = None
-    print(f"Failed to connect to database: {e}")
+engine = None
+SessionLocal = None
+Base = declarative_base()
+_is_sqlite = False
 
-class PredictionHistory(Base if Base else object):
+class PredictionHistory(Base):
     __tablename__ = "prediction_history"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -42,12 +38,37 @@ class PredictionHistory(Base if Base else object):
     model_used = Column(String(50))
 
 def init_db():
-    if engine and Base:
-        try:
-            Base.metadata.create_all(bind=engine)
-        except Exception as e:
-            print(f"Warning: Database initialization encountered an error (this is often safe to ignore if tables already exist): {e}")
-
+    global engine, SessionLocal, _is_sqlite
+    
+    # Try PostgreSQL first
+    try:
+        # Use a short connect timeout so we don't hang if database is offline
+        temp_engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 3})
+        # Test the connection immediately
+        with temp_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        
+        engine = temp_engine
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        Base.metadata.create_all(bind=engine)
+        _is_sqlite = False
+        print("Successfully connected to PostgreSQL database.")
+        return
+    except Exception as e:
+        print(f"PostgreSQL connection failed: {e}. Falling back to SQLite...")
+        
+    # Fallback to SQLite
+    try:
+        os.makedirs("db", exist_ok=True)
+        engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        Base.metadata.create_all(bind=engine)
+        _is_sqlite = True
+        print("Successfully initialized and connected to SQLite fallback database.")
+    except Exception as sq_err:
+        print(f"Failed to initialize SQLite fallback database: {sq_err}")
+        engine = None
+        SessionLocal = None
 
 def get_db_session():
     if not SessionLocal:
@@ -100,8 +121,6 @@ def check_db_connection():
         return False
     try:
         db = SessionLocal()
-        # Execute a simple query to verify connection
-        from sqlalchemy import text
         db.execute(text("SELECT 1"))
         return True
     except Exception:
@@ -109,4 +128,8 @@ def check_db_connection():
     finally:
         if 'db' in locals():
             db.close()
+
+def is_sqlite_fallback():
+    return _is_sqlite
+
 
