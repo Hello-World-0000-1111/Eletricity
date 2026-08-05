@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 from src.ui_components import apply_custom_theme
 from src.model_integration import predict_electricity
 from src.database import init_db, log_prediction, get_prediction_history, check_db_connection, is_sqlite_fallback
@@ -18,6 +19,8 @@ st.set_page_config(
 
 # Apply Modern Dark Theme
 apply_custom_theme()
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     # Sidebar Logo and Navigation
@@ -211,47 +214,47 @@ def main():
             col_img1, col_img2, col_img3 = st.columns(3)
             with col_img1:
                 try:
-                    st.image("plot/Img14_MAE_Comparision.png", caption="MAE Comparison")
-                except:
-                    st.info("MAE Comparison plot not found.")
+                    st.image(os.path.join(BASE_DIR, "plot", "Img14_MAE_Comparision.png"), caption="MAE Comparison")
+                except Exception as e:
+                    st.info(f"MAE Comparison plot not found: {e}")
             with col_img2:
                 try:
-                    st.image("plot/Img15_MSE_Comparision.png", caption="MSE Comparison")
-                except:
-                    st.info("MSE Comparison plot not found.")
+                    st.image(os.path.join(BASE_DIR, "plot", "Img15_MSE_Comparision.png"), caption="MSE Comparison")
+                except Exception as e:
+                    st.info(f"MSE Comparison plot not found: {e}")
             with col_img3:
                 try:
-                    st.image("plot/Img16_RMSE_Comparision.png", caption="RMSE Comparison")
-                except:
-                    st.info("RMSE Comparison plot not found.")
+                    st.image(os.path.join(BASE_DIR, "plot", "Img16_RMSE_Comparision.png"), caption="RMSE Comparison")
+                except Exception as e:
+                    st.info(f"RMSE Comparison plot not found: {e}")
 
         with tab2:
             st.markdown("#### XGBoost Model Performance")
             try:
-                st.image("plot/Img12_XGBoost.png", caption="XGBoost Actual vs Predicted Consumption")
-            except:
-                st.info("XGBoost prediction plot not found.")
+                st.image(os.path.join(BASE_DIR, "plot", "Img12_XGBoost.png"), caption="XGBoost Actual vs Predicted Consumption")
+            except Exception as e:
+                st.info(f"XGBoost prediction plot not found: {e}")
 
         with tab3:
             st.markdown("#### LSTM Model Performance")
             try:
-                st.image("plot/Img13_LSTM_Model.png", caption="LSTM Actual vs Predicted Consumption")
-            except:
-                st.info("LSTM prediction plot not found.")
+                st.image(os.path.join(BASE_DIR, "plot", "Img13_LSTM_Model.png"), caption="LSTM Actual vs Predicted Consumption")
+            except Exception as e:
+                st.info(f"LSTM prediction plot not found: {e}")
 
         with tab4:
             st.markdown("#### ARIMA & SARIMA Models")
             col_ts1, col_ts2 = st.columns(2)
             with col_ts1:
                 try:
-                    st.image("plot/Img10_ARIMA_Model.png", caption="ARIMA Forecast")
-                except:
-                    st.info("ARIMA plot not found.")
+                    st.image(os.path.join(BASE_DIR, "plot", "Img10_ARIMA_Model.png"), caption="ARIMA Forecast")
+                except Exception as e:
+                    st.info(f"ARIMA plot not found: {e}")
             with col_ts2:
                 try:
-                    st.image("plot/Img11_SARIMA_Model.png", caption="SARIMA Forecast")
-                except:
-                    st.info("SARIMA plot not found.")
+                    st.image(os.path.join(BASE_DIR, "plot", "Img11_SARIMA_Model.png"), caption="SARIMA Forecast")
+                except Exception as e:
+                    st.info(f"SARIMA plot not found: {e}")
 
 
 if __name__ == "__main__":
