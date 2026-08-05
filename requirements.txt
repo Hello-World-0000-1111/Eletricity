@@ -9,8 +9,8 @@ keras
 statsmodels
 jupyter
 notebook
-streamlit 
-sqlalchemy 
-psycopg2-binary 
-fpdf2 
+streamlit
+sqlalchemy
+psycopg2-binary
+fpdf2
 python-dotenv
