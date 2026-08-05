@@ -169,21 +169,90 @@ def main():
                 )
 
     elif page == "About Model":
-        st.subheader("Model Performance & Evaluation")
+        st.subheader("📊 Model Performance & Evaluation")
+        
         st.markdown("""
-        This application is powered by a machine learning pipeline trained to forecast electricity demand.
-        
-        **Available Models Evaluated:**
-        * XGBoost (Current Production Model)
-        * LSTM (Long Short-Term Memory Network)
-        * SARIMA (Seasonal ARIMA)
-        
-        *For full performance metrics (Accuracy, RMSE, R² Score, etc.), please refer to the Jupyter Notebook included in the project documentation.*
+        This application is powered by an advanced machine learning pipeline. 
+        Since this is a **regression task** (forecasting continuous electricity demand in kWh), standard classification metrics like Accuracy, Precision, Recall, and F1-Score do not apply. 
+        Instead, we evaluate models using regression metrics: **Mean Absolute Error (MAE)**, **Mean Squared Error (MSE)**, and **Root Mean Squared Error (RMSE)**.
         """)
-        try:
-            st.image("Workflow.drawio.png", caption="Project Workflow")
-        except:
-            pass
+
+        # Highlight Metrics for current Production Model (XGBoost)
+        st.markdown("### 🏆 Production Model: XGBoost")
+        m_col1, m_col2, m_col3 = st.columns(3)
+        with m_col1:
+            st.metric(label="Mean Absolute Error (MAE)", value="4.49 kWh", delta="-0.19 kWh vs LSTM (Best)")
+        with m_col2:
+            st.metric(label="Mean Squared Error (MSE)", value="30.26", delta="-1.83 vs LSTM (Best)")
+        with m_col3:
+            st.metric(label="Root Mean Squared Error (RMSE)", value="5.50 kWh", delta="-0.16 kWh vs LSTM (Best)")
+
+        # Comparison DataFrame
+        st.markdown("### 📈 Model Comparison Summary")
+        comparison_data = {
+            "Model": ["XGBoost (Production)", "ARIMA", "LSTM", "SARIMA"],
+            "MAE (Lower is Better)": [4.4858, 4.6749, 4.7017, 4.7201],
+            "MSE (Lower is Better)": [30.2589, 31.9002, 32.0881, 32.4086],
+            "RMSE (Lower is Better)": [5.5008, 5.6480, 5.6646, 5.6929]
+        }
+        df_comp = pd.DataFrame(comparison_data)
+        st.dataframe(df_comp, use_container_width=True)
+
+        # Tabs for Plots & Analysis
+        tab1, tab2, tab3, tab4 = st.tabs([
+            "📊 Model Comparison Plots", 
+            "⚡ XGBoost Predictions", 
+            "🧠 LSTM Predictions", 
+            "📈 ARIMA & SARIMA"
+        ])
+        
+        with tab1:
+            st.markdown("#### Evaluation Metric Visualizations")
+            col_img1, col_img2, col_img3 = st.columns(3)
+            with col_img1:
+                try:
+                    st.image("plot/Img14_MAE_Comparision.png", caption="MAE Comparison")
+                except:
+                    st.info("MAE Comparison plot not found.")
+            with col_img2:
+                try:
+                    st.image("plot/Img15_MSE_Comparision.png", caption="MSE Comparison")
+                except:
+                    st.info("MSE Comparison plot not found.")
+            with col_img3:
+                try:
+                    st.image("plot/Img16_RMSE_Comparision.png", caption="RMSE Comparison")
+                except:
+                    st.info("RMSE Comparison plot not found.")
+
+        with tab2:
+            st.markdown("#### XGBoost Model Performance")
+            try:
+                st.image("plot/Img12_XGBoost.png", caption="XGBoost Actual vs Predicted Consumption")
+            except:
+                st.info("XGBoost prediction plot not found.")
+
+        with tab3:
+            st.markdown("#### LSTM Model Performance")
+            try:
+                st.image("plot/Img13_LSTM_Model.png", caption="LSTM Actual vs Predicted Consumption")
+            except:
+                st.info("LSTM prediction plot not found.")
+
+        with tab4:
+            st.markdown("#### ARIMA & SARIMA Models")
+            col_ts1, col_ts2 = st.columns(2)
+            with col_ts1:
+                try:
+                    st.image("plot/Img10_ARIMA_Model.png", caption="ARIMA Forecast")
+                except:
+                    st.info("ARIMA plot not found.")
+            with col_ts2:
+                try:
+                    st.image("plot/Img11_SARIMA_Model.png", caption="SARIMA Forecast")
+                except:
+                    st.info("SARIMA plot not found.")
+
 
 if __name__ == "__main__":
     main()
