@@ -15,11 +15,48 @@ def apply_custom_theme():
         }
 
         /* Glassmorphism for containers and sidebars */
-        .css-1d391kg, .css-12oz5g7 {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        section[data-testid="stSidebar"] {
+            background-color: #0b0f19 !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        section[data-testid="stSidebar"] .stMarkdown h1 {
+            color: #f8fafc;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Customize Sidebar Radio Buttons */
+        div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label {
+            background-color: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateX(4px);
+        }
+
+        div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label[data-selected="true"] {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%) !important;
+            border-color: #3b82f6 !important;
+            font-weight: 600;
+        }
+
+        /* Hide the default radio circle in Streamlit to make it look like a button tab list */
+        div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
+            font-size: 15px;
+            color: #e2e8f0;
         }
 
         /* Input Elements */

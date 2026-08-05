@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from src.ui_components import apply_custom_theme
 from src.model_integration import predict_electricity
-from src.database import init_db, log_prediction, get_prediction_history
+from src.database import init_db, log_prediction, get_prediction_history, check_db_connection
 from src.export_utils import convert_to_csv, convert_to_pdf
 
 # Initialize Database
@@ -20,14 +20,51 @@ st.set_page_config(
 apply_custom_theme()
 
 def main():
+    # Sidebar Logo and Navigation
+    st.sidebar.markdown("""
+    <div style='text-align: center; margin-bottom: 25px; margin-top: -30px;'>
+        <h1 style='font-size: 28px; margin: 0; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>⚡ ElectraAI</h1>
+        <p style='color: #64748b; font-size: 13px; margin-top: 5px;'>Demand Forecasting System</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown("<p style='font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 1px; margin-bottom: 10px;'>Navigation</p>", unsafe_allow_html=True)
+    page = st.sidebar.radio(
+        "Navigation",
+        options=["Predict", "History & Export", "About Model"],
+        label_visibility="collapsed"
+    )
+
+    # System Status Card
+    st.sidebar.markdown("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
+    db_connected = check_db_connection()
+    db_status_color = "#10b981" if db_connected else "#ef4444"
+    db_status_text = "Connected" if db_connected else "Offline (Fallback)"
+    
+    st.sidebar.markdown(
+        f"""
+        <div style='background-color: rgba(30, 41, 59, 0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);'>
+            <h4 style='margin: 0 0 10px 0; color: #f8fafc; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;'>System Status</h4>
+            <div style='display: flex; align-items: center; font-size: 12px; margin-bottom: 8px;'>
+                <span style='height: 8px; width: 8px; background-color: {db_status_color}; border-radius: 50%; display: inline-block; margin-right: 8px;'></span>
+                <span style='color: #94a3b8;'>Database: </span>
+                <strong style='color: #e2e8f0; margin-left: 4px;'>{db_status_text}</strong>
+            </div>
+            <div style='display: flex; align-items: center; font-size: 12px;'>
+                <span style='height: 8px; width: 8px; background-color: #3b82f6; border-radius: 50%; display: inline-block; margin-right: 8px;'></span>
+                <span style='color: #94a3b8;'>Model: </span>
+                <strong style='color: #e2e8f0; margin-left: 4px;'>XGBoost Active</strong>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.title("⚡ Electricity Demand Forecasting")
     st.markdown("Predict future electricity demand based on environmental and socioeconomic factors.")
 
-    # Sidebar for navigation
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Predict", "History & Export", "About Model"])
-
     if page == "Predict":
+
         st.subheader("Enter Prediction Parameters")
         
         # Form for input validation

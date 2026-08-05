@@ -94,3 +94,19 @@ def get_prediction_history(limit=100):
         return []
     finally:
         db.close()
+
+def check_db_connection():
+    if not SessionLocal:
+        return False
+    try:
+        db = SessionLocal()
+        # Execute a simple query to verify connection
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False
+    finally:
+        if 'db' in locals():
+            db.close()
+
